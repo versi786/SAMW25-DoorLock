@@ -4,8 +4,8 @@ int main() {
     if (pin PA15 == 0) {
         // Bootloader
         upload_code_to_flash();
-        decrypt_firmawre();
-        upload_code_flash();
+        decrypt_firmware();
+        upload_code_device();
         if(check_crc()){
             // valid
             upload_code_w25();
