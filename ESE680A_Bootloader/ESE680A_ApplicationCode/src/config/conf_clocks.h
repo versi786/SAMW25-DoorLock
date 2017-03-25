@@ -50,7 +50,7 @@
 
 /* System clock bus configuration */
 #  define CONF_CLOCK_CPU_CLOCK_FAILURE_DETECT     false
-#  define CONF_CLOCK_FLASH_WAIT_STATES            0
+#  define CONF_CLOCK_FLASH_WAIT_STATES            1
 #  define CONF_CLOCK_CPU_DIVIDER                  SYSTEM_MAIN_CLOCK_DIV_1
 #  define CONF_CLOCK_APBA_DIVIDER                 SYSTEM_MAIN_CLOCK_DIV_1
 #  define CONF_CLOCK_APBB_DIVIDER                 SYSTEM_MAIN_CLOCK_DIV_1
@@ -107,7 +107,7 @@
 #  define CONF_CLOCK_DFLL_MAX_FINE_STEP_SIZE      (0xff / 4)
 
 /* SYSTEM_CLOCK_SOURCE_DPLL configuration - Digital Phase-Locked Loop */
-#  define CONF_CLOCK_DPLL_ENABLE                  false
+#  define CONF_CLOCK_DPLL_ENABLE                  true
 #  define CONF_CLOCK_DPLL_ON_DEMAND               true
 #  define CONF_CLOCK_DPLL_RUN_IN_STANDBY          false
 #  define CONF_CLOCK_DPLL_LOCK_BYPASS             false
@@ -115,10 +115,10 @@
 #  define CONF_CLOCK_DPLL_LOW_POWER_ENABLE        false
 
 #  define CONF_CLOCK_DPLL_LOCK_TIME               SYSTEM_CLOCK_SOURCE_DPLL_LOCK_TIME_DEFAULT
-#  define CONF_CLOCK_DPLL_REFERENCE_CLOCK         SYSTEM_CLOCK_SOURCE_DPLL_REFERENCE_CLOCK_XOSC32K
+#  define CONF_CLOCK_DPLL_REFERENCE_CLOCK         SYSTEM_CLOCK_SOURCE_DPLL_REFERENCE_CLOCK_GCLK
 #  define CONF_CLOCK_DPLL_FILTER                  SYSTEM_CLOCK_SOURCE_DPLL_FILTER_DEFAULT
 
-#  define CONF_CLOCK_DPLL_REFERENCE_FREQUENCY     32768
+#  define CONF_CLOCK_DPLL_REFERENCE_FREQUENCY     1000000
 #  define CONF_CLOCK_DPLL_REFERENCE_DIVIDER       1
 #  define CONF_CLOCK_DPLL_OUTPUT_FREQUENCY        48000000
 
@@ -139,10 +139,10 @@
 #  define CONF_CLOCK_GCLK_0_OUTPUT_ENABLE         false
 
 /* Configure GCLK generator 1 */
-#  define CONF_CLOCK_GCLK_1_ENABLE                false
+#  define CONF_CLOCK_GCLK_1_ENABLE                true
 #  define CONF_CLOCK_GCLK_1_RUN_IN_STANDBY        false
-#  define CONF_CLOCK_GCLK_1_CLOCK_SOURCE          SYSTEM_CLOCK_SOURCE_XOSC32K
-#  define CONF_CLOCK_GCLK_1_PRESCALER             1
+#  define CONF_CLOCK_GCLK_1_CLOCK_SOURCE          SYSTEM_CLOCK_SOURCE_OSC8M
+#  define CONF_CLOCK_GCLK_1_PRESCALER             8
 #  define CONF_CLOCK_GCLK_1_OUTPUT_ENABLE         false
 
 /* Configure GCLK generator 2 (RTC) */
@@ -195,4 +195,3 @@
 #  define CONF_CLOCK_GCLK_8_OUTPUT_ENABLE         false
 
 #endif /* CONF_CLOCKS_H_INCLUDED */
-
