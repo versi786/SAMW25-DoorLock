@@ -179,6 +179,44 @@ int main (void)
 	
 	boot_status status;
 	int x = sizeof(boot_status);
+	
+	
+	//TESTING DELETE ME
+	do
+    {
+        error_code = nvm_read_buffer(
+                BOOT_STATUS_ADDR,
+                (void *) &status, NVMCTRL_PAGE_SIZE);
+    } while (error_code == STATUS_BUSY);
+	
+	do
+	{
+		error_code = nvm_erase_row(
+				BOOT_STATUS_ADDR);
+	} while (error_code == STATUS_BUSY);
+	
+	do
+    {
+        error_code = nvm_read_buffer(
+                BOOT_STATUS_ADDR,
+                (void *) &status, NVMCTRL_PAGE_SIZE);
+    } while (error_code == STATUS_BUSY);
+	status = default_boot_status;
+	do
+	{
+		error_code = nvm_write_buffer(
+				BOOT_STATUS_ADDR,
+				(void *) &status, NVMCTRL_PAGE_SIZE);
+	} while (error_code == STATUS_BUSY);
+	boot_status new_status = {0};
+	do
+    {
+        error_code = nvm_read_buffer(
+                BOOT_STATUS_ADDR,
+                (void *) &new_status, NVMCTRL_PAGE_SIZE);
+    } while (error_code == STATUS_BUSY);
+	
+	//END OF TESTIN DELETE ME
 
 	// read out existing boot status
 	do
