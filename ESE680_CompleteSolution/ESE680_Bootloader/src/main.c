@@ -81,7 +81,10 @@ struct spi_module at25dfx_spi;
 struct at25dfx_chip_module at25dfx_chip;
 //! [driver_instances]
 
-#define BOOT_STATUS_ADDR 100 * NVMCTRL_ROW_PAGES * NVMCTRL_PAGE_SIZE
+// MEMORY MAP
+// Code goest to ~ 0x3500 budget until 0x4FFF
+// BOOT Status 41
+#define BOOT_STATUS_ADDR 0x4100
 #define BASE_CODE_ADDR 0x2000
 #define TOP_CODE_ADDR 0x4000
 #define FLASH_FIRMWARE_HEADER_ADDR 0x2000
@@ -90,11 +93,11 @@ struct at25dfx_chip_module at25dfx_chip;
 #define INTEGRITY_CHECK 0xdead
 #define APP_START_ADDR 0x2000
 typedef struct bs {
-	uint8_t integrity_check;
+	uint32_t integrity_check;
 	uint8_t signature[3];
 	uint8_t executing_image;
 	uint8_t downlaoded_image;	
-	uint8_t arr[NVMCTRL_PAGE_SIZE-6]
+	uint8_t arr[NVMCTRL_PAGE_SIZE-9]
 }boot_status;
 
 boot_status default_boot_status = { .integrity_check = INTEGRITY_CHECK, .signature = {-1,-1,-1}, .executing_image = -1, .downlaoded_image = -1 };
@@ -163,23 +166,25 @@ void configure_nvm(void)
 int main (void)
 {
 	enum status_code error_code;
-	delay_init();
-	system_init();
-	system_interrupt_enable_global();
-	at25dfx_init();
-	//TODO system clock
-	// Initialization, there are no firmwares and no boot_status
-	//Disable watchdog timer
-	configure_wdt();
 	//Set up NVM Driver
 	configure_nvm();
+	system_init();
+	delay_init();
+	system_interrupt_enable_global();
+	at25dfx_init();
+	////TODO system clock
+	//// Initialization, there are no firmwares and no boot_status
+	////Disable watchdog timer
+	configure_wdt();
+	
 	boot_status status;
+	int x = sizeof(boot_status);
 
 	// read out existing boot status
 	do
     {
         error_code = nvm_read_buffer(
-               BOOT_STATUS_ADDR,
+                BOOT_STATUS_ADDR,
                 (void *) &status, NVMCTRL_PAGE_SIZE);
     } while (error_code == STATUS_BUSY);
 	if (status.integrity_check != INTEGRITY_CHECK) {
@@ -188,12 +193,12 @@ int main (void)
 		do
 		{
 			error_code = nvm_erase_row(
-					100 * NVMCTRL_ROW_PAGES * NVMCTRL_PAGE_SIZE);
+					BOOT_STATUS_ADDR);
 		} while (error_code == STATUS_BUSY);
 		do
 		{
 			error_code = nvm_write_buffer(
-					100 * NVMCTRL_ROW_PAGES * NVMCTRL_PAGE_SIZE,
+					BOOT_STATUS_ADDR,
 					(void *) &status, NVMCTRL_PAGE_SIZE);
 		} while (error_code == STATUS_BUSY);
 		NVIC_SystemReset();

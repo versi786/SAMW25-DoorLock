@@ -50,7 +50,10 @@
 
 /* System clock bus configuration */
 #  define CONF_CLOCK_CPU_CLOCK_FAILURE_DETECT     false
+
+/// We need 1 flash wait states for our 48MHz main clock to read correctly from the Non Volatile Memory
 #  define CONF_CLOCK_FLASH_WAIT_STATES            1
+
 #  define CONF_CLOCK_CPU_DIVIDER                  SYSTEM_MAIN_CLOCK_DIV_1
 #  define CONF_CLOCK_APBA_DIVIDER                 SYSTEM_MAIN_CLOCK_DIV_1
 #  define CONF_CLOCK_APBB_DIVIDER                 SYSTEM_MAIN_CLOCK_DIV_1
@@ -125,7 +128,7 @@
 /* DPLL GCLK reference configuration */
 #  define CONF_CLOCK_DPLL_REFERENCE_GCLK_GENERATOR  GCLK_GENERATOR_1
 /* DPLL GCLK lock timer configuration */
-#  define CONF_CLOCK_DPLL_LOCK_GCLK_GENERATOR     GCLK_GENERATOR_1
+#  define CONF_CLOCK_DPLL_LOCK_GCLK_GENERATOR       GCLK_GENERATOR_1
 
 /* Set this to true to configure the GCLK when running clocks_init. If set to
  * false, none of the GCLK generators will be configured in clocks_init(). */
@@ -134,29 +137,32 @@
 /* Configure GCLK generator 0 (Main Clock) */
 #  define CONF_CLOCK_GCLK_0_ENABLE                true
 #  define CONF_CLOCK_GCLK_0_RUN_IN_STANDBY        false
-#  define CONF_CLOCK_GCLK_0_CLOCK_SOURCE          SYSTEM_CLOCK_SOURCE_OSC8M
+#  define CONF_CLOCK_GCLK_0_CLOCK_SOURCE          SYSTEM_CLOCK_SOURCE_DPLL
 #  define CONF_CLOCK_GCLK_0_PRESCALER             1
 #  define CONF_CLOCK_GCLK_0_OUTPUT_ENABLE         false
 
 /* Configure GCLK generator 1 */
-#  define CONF_CLOCK_GCLK_1_ENABLE                true
+/// Used as reference clock for DPLL
+#  define CONF_CLOCK_GCLK_1_ENABLE                true  
 #  define CONF_CLOCK_GCLK_1_RUN_IN_STANDBY        false
 #  define CONF_CLOCK_GCLK_1_CLOCK_SOURCE          SYSTEM_CLOCK_SOURCE_OSC8M
 #  define CONF_CLOCK_GCLK_1_PRESCALER             8
 #  define CONF_CLOCK_GCLK_1_OUTPUT_ENABLE         false
 
 /* Configure GCLK generator 2 (RTC) */
-#  define CONF_CLOCK_GCLK_2_ENABLE                false
-#  define CONF_CLOCK_GCLK_2_RUN_IN_STANDBY        false
-#  define CONF_CLOCK_GCLK_2_CLOCK_SOURCE          SYSTEM_CLOCK_SOURCE_OSC32K
+/// Used for low power clocking mode
+#  define CONF_CLOCK_GCLK_2_ENABLE                true
+#  define CONF_CLOCK_GCLK_2_RUN_IN_STANDBY        true
+#  define CONF_CLOCK_GCLK_2_CLOCK_SOURCE          SYSTEM_CLOCK_SOURCE_ULP32K
 #  define CONF_CLOCK_GCLK_2_PRESCALER             32
 #  define CONF_CLOCK_GCLK_2_OUTPUT_ENABLE         false
 
 /* Configure GCLK generator 3 */
-#  define CONF_CLOCK_GCLK_3_ENABLE                false
+/// Used for the WDT
+#  define CONF_CLOCK_GCLK_3_ENABLE                true
 #  define CONF_CLOCK_GCLK_3_RUN_IN_STANDBY        false
-#  define CONF_CLOCK_GCLK_3_CLOCK_SOURCE          SYSTEM_CLOCK_SOURCE_OSC8M
-#  define CONF_CLOCK_GCLK_3_PRESCALER             1
+#  define CONF_CLOCK_GCLK_3_CLOCK_SOURCE          SYSTEM_CLOCK_SOURCE_ULP32K
+#  define CONF_CLOCK_GCLK_3_PRESCALER             32
 #  define CONF_CLOCK_GCLK_3_OUTPUT_ENABLE         false
 
 /* Configure GCLK generator 4 */
@@ -195,3 +201,4 @@
 #  define CONF_CLOCK_GCLK_8_OUTPUT_ENABLE         false
 
 #endif /* CONF_CLOCKS_H_INCLUDED */
+
