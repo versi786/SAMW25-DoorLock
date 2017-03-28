@@ -82,25 +82,26 @@ struct at25dfx_chip_module at25dfx_chip;
 //! [driver_instances]
 
 // MEMORY MAP
-// Code goest to ~ 0x3500 budget until 0x4FFF
-// BOOT Status 41
+// Code goest to ~ 0x3500 budget until 0x0FFF
+// BOOT Status 4100 -> 41FF
+// APP 5000 -> TOP
 #define BOOT_STATUS_ADDR 0x4100
-#define BASE_CODE_ADDR 0x2000
-#define TOP_CODE_ADDR 0x4000
+#define BASE_CODE_ADDR 0x5000
+#define TOP_CODE_ADDR 0x7000
 #define FLASH_FIRMWARE_HEADER_ADDR 0x2000
 #define BASE_FLASH_CODE_ADDR 0x3000
 #define TOP_FLASH_CODE_ADDR 0x5000
 #define INTEGRITY_CHECK 0xdead
-#define APP_START_ADDR 0x2000
+#define APP_START_ADDR 0x5000
 typedef struct bs {
 	uint32_t integrity_check;
 	uint8_t signature[3];
-	uint8_t executing_image;
-	uint8_t downlaoded_image;	
+	int8_t executing_image;
+	int8_t downlaoded_image;	
 	uint8_t arr[NVMCTRL_PAGE_SIZE-9]
 }boot_status;
 
-boot_status default_boot_status = { .integrity_check = INTEGRITY_CHECK, .signature = {-1,-1,-1}, .executing_image = -1, .downlaoded_image = -1 };
+boot_status default_boot_status = { .integrity_check = INTEGRITY_CHECK, .signature = {-1,-1,-1}, .executing_image = 1, .downlaoded_image = -1 };
 	
 typedef struct fh {
 	uint16_t firmware_version;
@@ -162,11 +163,13 @@ void configure_nvm(void)
 	config_nvm.manual_page_write = false;
 	nvm_set_config(&config_nvm);
 }
+struct usart_module usart_instance;
+
 
 int main (void)
 {
 	enum status_code error_code;
-	//Set up NVM Driver
+	//Set up NVM
 	configure_nvm();
 	system_init();
 	delay_init();
@@ -178,45 +181,6 @@ int main (void)
 	configure_wdt();
 	
 	boot_status status;
-	int x = sizeof(boot_status);
-	
-	
-	//TESTING DELETE ME
-	do
-    {
-        error_code = nvm_read_buffer(
-                BOOT_STATUS_ADDR,
-                (void *) &status, NVMCTRL_PAGE_SIZE);
-    } while (error_code == STATUS_BUSY);
-	
-	do
-	{
-		error_code = nvm_erase_row(
-				BOOT_STATUS_ADDR);
-	} while (error_code == STATUS_BUSY);
-	
-	do
-    {
-        error_code = nvm_read_buffer(
-                BOOT_STATUS_ADDR,
-                (void *) &status, NVMCTRL_PAGE_SIZE);
-    } while (error_code == STATUS_BUSY);
-	status = default_boot_status;
-	do
-	{
-		error_code = nvm_write_buffer(
-				BOOT_STATUS_ADDR,
-				(void *) &status, NVMCTRL_PAGE_SIZE);
-	} while (error_code == STATUS_BUSY);
-	boot_status new_status = {0};
-	do
-    {
-        error_code = nvm_read_buffer(
-                BOOT_STATUS_ADDR,
-                (void *) &new_status, NVMCTRL_PAGE_SIZE);
-    } while (error_code == STATUS_BUSY);
-	
-	//END OF TESTIN DELETE ME
 
 	// read out existing boot status
 	do
@@ -289,14 +253,13 @@ int main (void)
 			void (*application_code_entry)(void);
 			
 			/* Rebase the Stack Pointer */
-			__set_MSP(*(uint32_t *) APP_START_ADDR);
+			//__set_MSP(*(uint32_t *) APP_START_ADDR);
 			
 			/* Rebase the vector table base address */
 			SCB->VTOR = ((uint32_t) APP_START_ADDR & SCB_VTOR_TBLOFF_Msk);
 			
 			/* Load the Reset Handler address of the application */
-			application_code_entry = (void (*)(void))(unsigned *)(*(unsigned *)
-			(APP_START_ADDR+ 4));
+			application_code_entry = (void (*)(void))(unsigned *)(*(unsigned *) (APP_START_ADDR+ 4));
 			
 			/* Jump to user Reset Handler in the application */
 			application_code_entry();
