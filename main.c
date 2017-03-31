@@ -110,6 +110,7 @@ typedef struct fh {
 }firmware_header;
 
 firmware_header default_firmware_header = { .firmware_version = -1, .checksum = -1 };
+firmware_header fw_header;
 
 void configure_wdt(void)
 {
@@ -247,7 +248,7 @@ int main (void)
 				
 					//image is correctly loaded into nvm. Update the boot status
 					status.integrity_check = INTEGRITY_CHECK;
-					status.executing_image  = firmware_header.firmware_version;	
+					status.executing_image  = fw_header.firmware_version;	
 					do
 					{
 						error_code = nvm_erase_row(
@@ -304,7 +305,7 @@ int main (void)
 					
 						//image is correctly loaded into nvm. Update the boot status
 						status.integrity_check = INTEGRITY_CHECK;
-						status.executing_image  = firmware_header.firmware_version;
+						status.executing_image  = fw_header.firmware_version;
 						do
 						{
 							error_code = nvm_erase_row(
@@ -324,21 +325,21 @@ int main (void)
 						// BAD
 						//both the firmware versions in external flash are corrupted.
 						//update boot status to default.
-						status = default_boot_status;
-						do
-						{
-							error_code = nvm_erase_row(
-							BOOT_STATUS_ADDR);
-						} while (error_code == STATUS_BUSY);
-						do
-						{
-							error_code = nvm_write_buffer(
-							BOOT_STATUS_ADDR,
-							(void *) &status, NVMCTRL_PAGE_SIZE);
-						} while (error_code == STATUS_BUSY);
-						NVIC_SystemReset();
-				}//end golden image copying
-					
+							status = default_boot_status;
+							do
+							{
+								error_code = nvm_erase_row(
+								BOOT_STATUS_ADDR);
+							} while (error_code == STATUS_BUSY);
+							do
+							{
+								error_code = nvm_write_buffer(
+								BOOT_STATUS_ADDR,
+								(void *) &status, NVMCTRL_PAGE_SIZE);
+							} while (error_code == STATUS_BUSY);
+							NVIC_SystemReset();
+					}//end golden image copying
+				}
 			} //end of status = downloaded_image
 		 else if (status.executing_image != -1)
 		  {
@@ -359,6 +360,9 @@ int main (void)
 			application_code_entry();
 
 		}//end of application code
-		
+		else
+		{
+			/* do nothing*/
+		}
 	
 }
