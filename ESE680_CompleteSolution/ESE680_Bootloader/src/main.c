@@ -87,7 +87,7 @@ struct at25dfx_chip_module at25dfx_chip;
 // APP 5000 -> TOP
 #define BOOT_STATUS_ADDR 0x4100 //boot status address in nvm
 #define BASE_CODE_ADDR 0x5000 //nvm application start address
-#define TOP_CODE_ADDR 0x7000  //nvm application end address
+#define TOP_CODE_ADDR 0x8000  //nvm application end address
 #define FLASH_FIRMWARE_HEADER_ADDR 0x2000  //address of header for fw1 in external flash
 #define BASE_FLASH_CODE_ADDR 0x3000  //start address of fw 1 in external flash
 #define TOP_FLASH_CODE_ADDR 0x6000   //start address of fw2 in in external flash
